@@ -1,12 +1,11 @@
-require("dotenv").config()
-const express = require("express")
-const mongoose = require("mongoose")
-const bodyParser = require("body-parser")
-const shoppingListRoutes = require("./src/routes/shoppingListRoutes")
+require("dotenv").config();
+const cors = require("cors");
+const express = require("express");
+const mongoose = require("mongoose");
+const shoppingListRoutes = require("./src/routes/shoppingListRoutes");
+const app = express();
 
-const app = express()
-
-const port = process.env.PORT;
+const port = process.env.PORT || 8080;
 
 async function connectDataBase() {
   await mongoose.connect(
@@ -16,15 +15,16 @@ async function connectDataBase() {
       useUnifiedTopology: true,
     }
   )
-}
+};
 
 app.listen(port, () => {
   connectDataBase().catch((err) => {
     console.log(`Erro ao conectar ao MongoDB: ${err}`)
   })
 
-  app.use(bodyParser.json())
-  app.use("/shopping-list", shoppingListRoutes)
+  app.use(express.json());
+  app.use(cors({ origin: "*" }));
+  app.use("/shopping-list", shoppingListRoutes);
 
   console.log(`Servidor está ouvindo na porta: ${port}`)
-})
+});
