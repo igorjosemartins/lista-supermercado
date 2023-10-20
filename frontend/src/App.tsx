@@ -1,8 +1,13 @@
-import { Button } from 'antd';
-import './App.css';
+import ItemList from './components/ItemList';
 
 function App() {
-  return <Button type="primary">Botão Teste</Button>
+  return (
+    <div className="App">
+      <header className="App-header">
+        <ItemList />
+      </header>
+    </div>
+  );
 }
 
-export default App
+export default App;
