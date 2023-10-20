@@ -3,85 +3,86 @@ const router = express.Router();
 const bodyParser = require("body-parser");
 const ShoppingList = require("../models/shoppingList");
 
-// ####################
-// ## ROTAS : LISTAS ##
-// ####################
-
+// listagem dos itens
 router.get("/", async (req, res) => {
-  const lists = await ShoppingList.find();
-  res.json(lists);
+
+  const items = await ShoppingList.find();
+
+  if (items.length == 0) {
+    return res.status(404).json( { message: "Não há itens criados." });
+  }
+
+  res.status(200).json({ items });
+});
+
+
+// listar um item em específico
+router.get("/search/:item", async (req, res) => {
+
+  const productName = req.params.item;
+
+  const searchedProduct = await ShoppingList.findOne({ product: productName }).exec();
+
+  if (!searchedProduct) {
+    return res.status(404).json({ message: "Item não encontrado" });
+  }
+
+  res.status(200).json(searchedProduct);
 })
 
+
+// criação de item
 router.post("/create", async (req, res) => {
-  const { name, items } = req.body;
 
-  const newList = new ShoppingList({ name, items });
-  await newList.save();
-
-  res.status(201).json({
-    message: "Lista criada com sucesso!",
-    list: newList,
-  })
-})
-
-router.put("/:id", async (req, res) => {
-
-  const listId = req.params.id;
-  const { name, items } = req.body;
-
-  const updatedList = await ShoppingList.findByIdAndUpdate(
-    listId,
-    { name, items },
-    { new: true }
-  )
-
-  if (!updatedList) {
-    res.status(404).json({ message: "Lista não encontrada" });
+  const { product, quantity } = req.body;
+  
+  if ((quantity <= 0) || (typeof quantity !== "number")) {
+    return res.status(400).json( { message: "A quantidade deve ser um número e não pode ser igual à zero" } );
   }
 
-  res.status(200).json(updatedList);
-})
+  const newItem = new ShoppingList({ product, quantity });
+  await newItem.save();
 
-router.delete("/:id/delete", async (req, res) => {
-
-  const listId = req.params.id;
-  const deletedList = await ShoppingList.findByIdAndRemove(listId);
-
-  if (!deletedList) {
-    return res.status(404).json({ error: "Lista não encontrada" });
-  }
-
-  res.status(200).json({ message: "Lista deletada com sucesso!" });
+  res.status(201).json({ message: "Item criado com sucesso!", newItem });
 });
 
 
-// ####################
-// ## ROTAS : ITENS ##
-// ####################
+// edição de item
+router.put("/edit/:id", async (req, res) => {
 
-router.post("/:id/add-item", async (req, res) => {
-  const listId = req.params.id;
+  const itemId = req.params.id;
   const { product, quantity } = req.body;
 
-  await ShoppingList.findByIdAndUpdate(listId, {
-    $push: { items: { product, quantity } },
-  })
+  if ((quantity <= 0) || (typeof quantity !== "number")) {
+    return res.status(400).json( { message: "A quantidade deve ser um número e não pode ser igual à zero" } )
+  }
 
-  const updatedList = await ShoppingList.findById(listId);
+  const updatedItem = await ShoppingList.findByIdAndUpdate(
+    itemId,
+    { product, quantity },
+    { new: true }
+  );
 
-  res.status(200).json(updatedList);
+  if (!updatedItem) {
+    return res.status(404).json( { message: "Não foi encontrado um Item com este Id" });
+  }
+
+  res.status(200).json( { message: "Item editado com sucesso!", updatedItem });
 });
 
-router.put("/:id/:itemId/edit-item", async (req, res) => {
 
-  const listId = req.params.id;
-  const itemId = req.params.itemId;
-  const { product, quantity } = req.body;
+// deleção de item
+router.delete("/delete/:id", async (req, res) => {
 
-  await ShoppingList.findByIdAndUpdate(listId,
-    { items: { product, quantity } },
-    { new: true }
-  )
-})
+  const itemId = req.params.id;
+
+  const deletedItem = await ShoppingList.findByIdAndDelete(itemId);
+
+  if (!deletedItem) {
+    return res.status(404).json( { message: "Não foi encontrado um Item com este Id" });
+  }
+
+  res.status(200).json( { message: "Item deletado com sucesso!", deletedItem });
+});
 
 module.exports = router;

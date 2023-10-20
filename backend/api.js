@@ -2,7 +2,7 @@ require("dotenv").config()
 const express = require("express")
 const mongoose = require("mongoose")
 const bodyParser = require("body-parser")
-const shoppingListRoutes = require("./routes/shoppingListRoutes")
+const shoppingListRoutes = require("./src/routes/shoppingListRoutes")
 
 const app = express()
 
