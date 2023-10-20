@@ -26,5 +26,6 @@ app.listen(port, () => {
   app.use(cors({ origin: "*" }));
   app.use("/shopping-list", shoppingListRoutes);
 
+  console.clear();
   console.log(`Servidor está ouvindo na porta: ${port}`)
 });
