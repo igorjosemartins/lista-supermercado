@@ -1,0 +1,30 @@
+/* Estilo da tabela */
+table {
+  width: 40%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  margin-top: 20px;
+  border: 2px solid #000000;
+  text-align: center;
+}
+
+/* Estilo do cabeçalho da tabela */
+thead {
+  background-color: #4a351b; /* Cor de fundo do cabeçalho */
+  color: #fff; /* Cor do texto no cabeçalho */
+}
+
+tbody {
+  background-color: #e9e9e9a2;
+}
+
+th, td {
+  padding: 10px;
+  vertical-align: middle;
+  border: 1px solid #000000;
+}
+
+/* Adicione margem ao redor da tabela para melhor espaçamento */
+table {
+  margin: 10px;
+}
