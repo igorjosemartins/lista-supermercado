@@ -1,4 +1,5 @@
 require("dotenv").config();
+const cls = require("./src/extra/cls");
 const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
@@ -26,6 +27,6 @@ app.listen(port, () => {
   app.use(cors({ origin: "*" }));
   app.use("/shopping-list", shoppingListRoutes);
 
-  console.clear();
+  cls;
   console.log(`Servidor está ouvindo na porta: ${port}`)
 });

@@ -12,12 +12,12 @@ router.get("/", async (req, res) => {
 
   if (items.length == 0) {
 
-    console.log(`[${currentDate}] - GET (404) : Não há itens criados.`);
+    console.log(`\n[${currentDate}] - GET (404) : Não há itens criados.`);
 
     return res.status(404).json( { message: "Não há itens criados." });
   }
 
-  console.log(`[${currentDate}] - GET (200) : ${JSON.stringify(items)}`);
+  console.log(`\n[${currentDate}] - GET (200) : ${JSON.stringify(items)}`);
   
   return res.status(200).json({ items });
 });
@@ -32,12 +32,12 @@ router.get("/search/:item", async (req, res) => {
 
   if (!searchedProduct) {
 
-    console.log(`[${currentDate}] - SEARCH (404) : Item não encontrado`);
+    console.log(`\n[${currentDate}] - SEARCH (404) : Item não encontrado`);
 
     return res.status(404).json({ message: "Item não encontrado" });
   }
 
-  console.log(`[${currentDate}] - SEARCH (200) : ${JSON.stringify(searchedProduct)}`);
+  console.log(`\n[${currentDate}] - SEARCH (200) : ${JSON.stringify(searchedProduct)}`);
 
   return res.status(200).json(searchedProduct);
 })
@@ -46,21 +46,27 @@ router.get("/search/:item", async (req, res) => {
 // criação de item
 router.post("/create", async (req, res) => {
 
-  const { product, quantity } = req.body;
-  
-  if ((quantity <= 0) || (typeof quantity !== "number")) {
+    try {
 
-    console.log(`[${currentDate}] - POST (400) : A quantidade deve ser um número e não pode ser igual à zero`);
+      const { product, quantity } = req.body;
+    
+      // if ((quantity <= 0) || (typeof quantity !== "number")) {
 
-    return res.status(400).json( { message: "A quantidade deve ser um número e não pode ser igual à zero" } );
+      //   console.log(`\n[${currentDate}] - POST (400) : A quantidade deve ser um número e não pode ser igual à zero`);
+
+      //   return res.status(400).json( { message: "A quantidade deve ser um número e não pode ser igual à zero" } );
+      // }
+
+      const newItem = new ShoppingList({ product, quantity });
+      await newItem.save();
+
+      console.log(`\n[${currentDate}] - POST (200) : ${JSON.stringify(newItem)}`);
+
+      return res.status(201).json({ message: "Item criado com sucesso!", newItem });
+
+  } catch(err) {
+    return res.status(500).json({ err })
   }
-
-  const newItem = new ShoppingList({ product, quantity });
-  await newItem.save();
-
-  console.log(`[${currentDate}] - POST (200) : ${JSON.stringify(newItem)}`);
-
-  return res.status(201).json({ message: "Item criado com sucesso!", newItem });
 });
 
 
@@ -70,12 +76,12 @@ router.put("/edit/:id", async (req, res) => {
   const itemId = req.params.id;
   const { product, quantity } = req.body;
 
-  if ((quantity <= 0) || (typeof quantity !== "number")) {
+  // if ((quantity <= 0) || (typeof quantity !== "number")) {
 
-    console.log(`[${currentDate}] - PUT (400) : A quantidade deve ser um número e não pode ser igual à zero`);
+  //   console.log(`\n[${currentDate}] - PUT (400) : A quantidade deve ser um número e não pode ser igual à zero`);
 
-    return res.status(400).json( { message: "A quantidade deve ser um número e não pode ser igual à zero" } )
-  }
+  //   return res.status(400).json( { message: "A quantidade deve ser um número e não pode ser igual à zero" } )
+  // }
 
   const updatedItem = await ShoppingList.findByIdAndUpdate(
     itemId,
@@ -85,12 +91,12 @@ router.put("/edit/:id", async (req, res) => {
 
   if (!updatedItem) {
 
-    console.log(`[${currentDate}] - PUT (404) : Não foi encontrado um Item com este Id`);
+    console.log(`\n[${currentDate}] - PUT (404) : Não foi encontrado um Item com este Id`);
 
     return res.status(404).json( { message: "Não foi encontrado um Item com este Id" });
   }
 
-  console.log(`[${currentDate}] - PUT (200) : ${JSON.stringify(updatedItem)}`);
+  console.log(`\n[${currentDate}] - PUT (200) : ${JSON.stringify(updatedItem)}`);
 
   return res.status(200).json( { message: "Item editado com sucesso!", updatedItem });
 });
@@ -105,12 +111,12 @@ router.delete("/delete/:id", async (req, res) => {
 
   if (!deletedItem) {
 
-    console.log(`[${currentDate}] - DELETE (404) : Não foi encontrado um Item com este Id`);
+    console.log(`\n[${currentDate}] - DELETE (404) : Não foi encontrado um Item com este Id`);
 
     return res.status(404).json( { message: "Não foi encontrado um Item com este Id" });
   }
 
-  console.log(`[${currentDate}] - DELETE (200) : ${JSON.stringify(deletedItem)}`);
+  console.log(`\n[${currentDate}] - DELETE (200) : ${JSON.stringify(deletedItem)}`);
 
   return res.status(200).json( { message: "Item deletado com sucesso!", deletedItem });
 });
