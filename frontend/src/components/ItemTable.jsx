@@ -13,9 +13,9 @@ const { Search } = Input;
 
 function ItemTable() {
   // ITEMS
-  const [items, setItems] = useState([])
-  const [showItemsResults, setShowItemsResults] = useState(false)
-  const [itemsNotFound, setItemsNotFound] = useState(false)
+  const [items, setItems] = useState([]);
+  const [showItemsResults, setShowItemsResults] = useState(false);
+  const [itemsNotFound, setItemsNotFound] = useState(false);
 
   useEffect(() => {
     axios
@@ -34,35 +34,39 @@ function ItemTable() {
   }, [])
 
   // SEARCH
-  const [searchItem, setSearchItem] = useState([])
-  const [showSearchItem, setShowSearchItem] = useState(false)
-  const [searchNotFound, setSearchNotFound] = useState(false)
+  const [searchItem, setSearchItem] = useState([]);
+  const [showSearchItem, setShowSearchItem] = useState(false);
+  const [searchNotFound, setSearchNotFound] = useState(false);
 
   const handleSearch = (searchItem) => {
     if (searchItem) {
       axios
         .get(`http://localhost:8080/shopping-list/search/${searchItem}`)
         .then((res) => {
-          setSearchItem(res.data)
-          setShowSearchItem(true)
-          setSearchNotFound(false)
+          setSearchItem(res.data);
+          setShowSearchItem(true);
+          setSearchNotFound(false);
 
-          setShowItemsResults(false)
+          setShowItemsResults(false);
         })
         .catch(function (error) {
           if (error.response.status === 404) {
-            setSearchNotFound(true)
-            setShowSearchItem(false)
+            setSearchNotFound(true);
+            setShowSearchItem(false);
 
-            setShowItemsResults(false)
+            setShowItemsResults(false);
           }
         })
     } else {
-      setSearchItem([])
-      setShowSearchItem(false)
-      setSearchNotFound(false)
+      setSearchItem([]);
+      setShowSearchItem(false);
+      setSearchNotFound(false);
 
-      setShowItemsResults(true)
+      if(items.length <= 1) {
+        setShowItemsResults(false);
+      } else {
+        setShowItemsResults(true);
+      }
     }
   }
 
@@ -70,7 +74,7 @@ function ItemTable() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const addNewItem = (newItem) => {
-    setItems([...items, newItem])
+    setItems([...items, newItem]);
   }
 
   const handleCreate = (createdItem) => {
@@ -79,6 +83,13 @@ function ItemTable() {
       .then(() => {
         notifySuccess("Item criado com sucesso!")
         addNewItem(createdItem);
+
+        axios.get("http://localhost:8080/shopping-list")
+          .then((res) => {
+            setItems(res.data.items);
+            setShowItemsResults(true);
+            setItemsNotFound(false);
+        });
       })
       .catch(function (error) {
         if (error.response.status === 404) {
@@ -90,6 +101,8 @@ function ItemTable() {
       });
 
     setShowCreateModal(false);
+
+    
   }
 
   // EDIT MODAL
@@ -109,30 +122,27 @@ function ItemTable() {
       return item;
     })
 
-    setItems(updatedItems)
+    setItems(updatedItems);
   }
 
   const handleEdit = (editedItem) => {
+
     if (itemToEdit) {
-      axios
-        .put(
-          `http://localhost:8080/shopping-list/edit/${itemToEdit._id}`,
-          editedItem
-        )
+      axios.put(`http://localhost:8080/shopping-list/edit/${itemToEdit._id}`, editedItem)
         .then((res) => {
-          notifySuccess("Item editado com sucesso!")
-          updateItemState(editedItem)
+          notifySuccess("Item editado com sucesso!");
+          updateItemState(editedItem);
         })
         .catch(function (error) {
           if (error.response.status === 404) {
-            toast.error("O Item não existe")
+            toast.error("O Item não existe");
           } else {
-            toast.error("Ocorreu um erro ao editar o item")
-            console.log(error)
+            toast.error("Ocorreu um erro ao editar o item");
+            console.log(error);
           }
         })
 
-      setShowEditModal(false)
+      setShowEditModal(false);
     }
   }
 
